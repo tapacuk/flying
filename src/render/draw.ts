@@ -1,5 +1,5 @@
 import type { LoopMetrics } from '../core/loop'
-import type { World } from '../sim/world'
+import type { World } from '../sim/core/world'
 
 export function lerp(a: number, b: number, alpha: number) {
   return a + (b - a) * alpha

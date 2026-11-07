@@ -1,7 +1,7 @@
+import { Entity } from '../core/entity'
+import { Vector2 } from '../core/vector'
+import type { World } from '../core/world'
 import { Bullet } from './bullet'
-import { Entity } from './entity'
-import { Vector2 } from './vector'
-import type { World } from './world'
 
 interface InputState {
   isDown(code: string): boolean

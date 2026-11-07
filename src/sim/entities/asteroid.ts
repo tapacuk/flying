@@ -1,5 +1,5 @@
-import { Entity } from './entity'
-import { Vector2 } from './vector'
+import { Entity } from '../core/entity'
+import { Vector2 } from '../core/vector'
 
 export class Asteroid extends Entity {
   constructor(x: number, y: number, vx: number, vy: number) {

@@ -1,8 +1,8 @@
-import { World } from './world'
-import { Entity } from './entity'
-import { Asteroid } from './asteroid'
-import { Ship } from './ship'
-import { spawnExplosion } from './particle'
+import { World } from '../core/world'
+import { Entity } from '../core/entity'
+import { Asteroid } from '../entities/asteroid'
+import { Ship } from '../entities/ship'
+import { spawnExplosion } from '../entities/particle'
 import { ARENA_WIDTH, ARENA_HEIGHT } from './arena'
 
 export function getCollisions(world: World): [Entity, Entity][] {

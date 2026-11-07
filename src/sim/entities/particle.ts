@@ -1,6 +1,6 @@
-import { Entity } from './entity'
-import { Vector2 } from './vector'
-import { World } from './world'
+import { Entity } from '../core/entity'
+import { Vector2 } from '../core/vector'
+import { World } from '../core/world'
 
 export class Particle extends Entity {
   public ttl: number

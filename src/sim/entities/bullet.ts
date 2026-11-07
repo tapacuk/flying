@@ -1,5 +1,5 @@
-import { Entity } from './entity'
-import { Vector2 } from './vector'
+import { Entity } from '../core/entity'
+import { Vector2 } from '../core/vector'
 
 export class Bullet extends Entity {
   public ttl: number = 1
