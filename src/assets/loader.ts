@@ -73,10 +73,9 @@ export function loadImage(
     img.src = url
   })
 }
-// Структура для збереження завантажених ресурсів
 export interface AssetCache {
   sprites: Map<string, HTMLImageElement>
-  // Аудіо додамо на кроці M2
+  sounds: Map<string, AudioBuffer>
 }
 
 export async function loadAll(
@@ -84,57 +83,53 @@ export async function loadAll(
   onProgress: (percent: number) => void,
   signal?: AbortSignal,
 ): Promise<AssetCache> {
-  // 1. Завантажуємо сам маніфест (з повторними спробами)
   const manifest = await withRetry(() => fetchJson(manifestUrl, signal), {
     attempts: 3,
     baseMs: 500,
     signal,
   })
 
-  const cache: AssetCache = {
-    sprites: new Map(),
-  }
+  const cache: AssetCache = { sprites: new Map(), sounds: new Map() }
 
-  // 2. Рахуємо загальну кількість файлів для прогрес-бару[cite: 6]
-  const spriteKeys = Object.keys(manifest.sprites)
-  const totalItems = spriteKeys.length
+  const spriteKeys = manifest.sprites ? Object.keys(manifest.sprites) : []
+  const soundKeys = manifest.sounds ? Object.keys(manifest.sounds) : []
+  const totalItems = spriteKeys.length + soundKeys.length
   let doneItems = 0
 
-  if (totalItems === 0) {
-    onProgress(1)
-    return cache
-  }
+  if (totalItems === 0) return cache
 
-  // 3. Формуємо масив промісів
-  const loadPromises = spriteKeys.map(async (key) => {
-    const url = manifest.sprites[key]
-
-    // Завантажуємо кожну картинку з retry[cite: 7]
-    const img = await withRetry(() => loadImage(url, signal), {
-      attempts: 3,
-      baseMs: 300,
-      signal,
-    })
-
-    cache.sprites.set(key, img)
-
-    // Оновлюємо прогрес[cite: 6]
+  const updateProgress = () => {
     doneItems++
     onProgress(doneItems / totalItems)
-  })
+  }
 
-  // 4. Чекаємо завершення всіх паралельних завантажень[cite: 6, 7]
-  await Promise.all(loadPromises)
+  const promises = [
+    ...spriteKeys.map(async (key) => {
+      const img = await withRetry(
+        () => loadImage(manifest.sprites[key], signal),
+        { attempts: 3, baseMs: 300, signal },
+      )
+      cache.sprites.set(key, img)
+      updateProgress()
+    }),
+    ...soundKeys.map(async (key) => {
+      const audio = await withRetry(
+        () => loadAudio(manifest.sounds[key], signal),
+        { attempts: 3, baseMs: 300, signal },
+      )
+      cache.sounds.set(key, audio)
+      updateProgress()
+    }),
+  ]
 
+  await Promise.all(promises)
   return cache
 }
 
-// Створюємо глобальний контекст (він стартує у стані "suspended")
 export const audioCtx = new (
   window.AudioContext || (window as any).webkitAudioContext
 )()
 
-// Завантаження та декодування аудіо
 export async function loadAudio(
   url: string,
   signal?: AbortSignal,

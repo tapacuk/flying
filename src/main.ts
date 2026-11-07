@@ -11,6 +11,8 @@ import { Asteroid } from './sim/entities/asteroid'
 import { ARENA_WIDTH, ARENA_HEIGHT, wrapArena } from './sim/systems/arena'
 import { resolveCollisions, type GameState } from './sim/systems/collision'
 import './styles.css'
+import { initAudio } from './audio/audio'
+import { gameBus } from './sim/core/events'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 if (!document.getElementById('game-canvas')) {
@@ -35,10 +37,11 @@ try {
   drawErrorScreen(ctx, ARENA_WIDTH, ARENA_HEIGHT, error as Error)
 }
 
-function startGame(_assets: AssetCache) {
+function startGame(assets: AssetCache) {
   const input = createInput()
   const world = new World()
   const currentShip = new Ship(ARENA_WIDTH / 2, ARENA_HEIGHT / 2)
+  initAudio(assets)
 
   world.spawn(currentShip)
   world.spawn(new Asteroid(100, 100, 50, 30))
@@ -47,7 +50,10 @@ function startGame(_assets: AssetCache) {
   let previousStates = new Map<number, any>()
 
   window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && currentShip.alive) currentShip.fire(world)
+    if (e.code === 'Space' && currentShip.alive) {
+      currentShip.fire(world)
+      gameBus.dispatchEvent(new CustomEvent('fired'))
+    }
   })
 
   const loop = createLoop({

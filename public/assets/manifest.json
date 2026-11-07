@@ -4,7 +4,7 @@
     "bullet": "/assets/bullet.png"
   },
   "sounds": {
-    "fire": "/assets/fire.mp3",
-    "explosion": "/assets/explosion.mp3"
+    "fire": "/assets/fire.wav",
+    "explosion": "/assets/explosion.wav"
   }
 }
