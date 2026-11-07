@@ -1,47 +1,36 @@
-// src/sim/ship.ts
-export interface Ship {
-  x: number
-  y: number
-  vx: number
-  vy: number
-  angle: number // у радіанах
-  thrust: boolean
+import { Entity } from './entity'
+import { Vector2 } from './vector'
+
+interface InputState {
+  isDown(code: string): boolean
 }
 
-export function createShip(): Ship {
-  return { x: 400, y: 300, vx: 0, vy: 0, angle: 0, thrust: false }
-}
+export class Ship extends Entity {
+  public thrust: boolean = false
 
-// dt завжди дорівнює фіксованому кроку (наприклад, 1/60 с)
-export function integrate(
-  ship: Ship,
-  input: ReturnType<typeof import('../core/input').createInput>,
-  dt: number,
-) {
-  const TURN_SPEED = 4 // радіан за секунду
-  const THRUST_POWER = 400 // пікселів за секунду в квадраті
-  const DRAG = 0.98 // тертя/опір простору
-
-  // Поворот
-  if (input.isDown('ArrowLeft') || input.isDown('KeyA')) {
-    ship.angle -= TURN_SPEED * dt
+  constructor(x: number, y: number) {
+    super(new Vector2(x, y), 'ship', 15)
   }
-  if (input.isDown('ArrowRight') || input.isDown('KeyD')) {
-    ship.angle += TURN_SPEED * dt
+  updateWithInput(dt: number, input: InputState): void {
+    const TURN_SPEED = 4
+    const THRUST_POWER = 400
+    const DRAG = 0.98
+
+    if (input.isDown('ArrowLeft') || input.isDown('KeyA')) {
+      this.angle -= TURN_SPEED * dt
+    }
+    if (input.isDown('ArrowRight') || input.isDown('KeyD')) {
+      this.angle += TURN_SPEED * dt
+    }
+
+    this.thrust = input.isDown('ArrowUp') || input.isDown('KeyW')
+    if (this.thrust) {
+      const thrustVec = Vector2.fromAngle(this.angle, THRUST_POWER * dt)
+      this.vel = this.vel.add(thrustVec)
+    }
+
+    this.vel = this.vel.scale(DRAG)
+
+    super.update(dt)
   }
-
-  // Прискорення
-  ship.thrust = input.isDown('ArrowUp') || input.isDown('KeyW')
-  if (ship.thrust) {
-    ship.vx += Math.cos(ship.angle) * THRUST_POWER * dt
-    ship.vy += Math.sin(ship.angle) * THRUST_POWER * dt
-  }
-
-  // Інерція (гальмування)
-  ship.vx *= DRAG
-  ship.vy *= DRAG
-
-  // Оновлення позиції
-  ship.x += ship.vx * dt
-  ship.y += ship.vy * dt
 }

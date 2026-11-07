@@ -1,12 +1,15 @@
-import type { Ship } from './ship'
+import { Entity } from './entity'
+import { Vector2 } from './vector'
 
-// Для початку зафіксуємо розміри арени
 export const ARENA_WIDTH = 800
 export const ARENA_HEIGHT = 600
 
-export function wrapArena(ship: Ship) {
-  if (ship.x < 0) ship.x += ARENA_WIDTH
-  if (ship.x >= ARENA_WIDTH) ship.x -= ARENA_WIDTH
-  if (ship.y < 0) ship.y += ARENA_HEIGHT
-  if (ship.y >= ARENA_HEIGHT) ship.y -= ARENA_HEIGHT
+export function wrapArena(entity: Entity) {
+  let { x, y } = entity.pos
+  if (x < 0) x += ARENA_WIDTH
+  if (x >= ARENA_WIDTH) x -= ARENA_WIDTH
+  if (y < 0) y += ARENA_HEIGHT
+  if (y >= ARENA_HEIGHT) y -= ARENA_HEIGHT
+
+  entity.pos = new Vector2(x, y)
 }

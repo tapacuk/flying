@@ -1,4 +1,3 @@
-import type { Ship } from '../sim/ship'
 import type { LoopMetrics } from '../core/loop'
 
 export function lerp(a: number, b: number, alpha: number) {
@@ -15,19 +14,19 @@ export function lerpAngle(a: number, b: number, alpha: number) {
 
 export function drawShip(
   ctx: CanvasRenderingContext2D,
-  prev: Ship,
-  curr: Ship,
+  prev: any,
+  curr: any,
   alpha: number,
 ) {
-  const x = lerp(prev.x, curr.x, alpha)
-  const y = lerp(prev.y, curr.y, alpha)
+  // Використовуємо .pos.x та .pos.y
+  const x = lerp(prev.pos.x, curr.pos.x, alpha)
+  const y = lerp(prev.pos.y, curr.pos.y, alpha)
   const angle = lerpAngle(prev.angle, curr.angle, alpha)
 
   ctx.save()
   ctx.translate(x, y)
   ctx.rotate(angle)
 
-  // Малюємо простий корабель (трикутник), який дивиться вправо
   ctx.beginPath()
   ctx.moveTo(15, 0)
   ctx.lineTo(-10, 10)
@@ -36,7 +35,6 @@ export function drawShip(
   ctx.fillStyle = 'white'
   ctx.fill()
 
-  // Полум'я двигуна
   if (curr.thrust) {
     ctx.beginPath()
     ctx.moveTo(-10, 5)
@@ -45,7 +43,6 @@ export function drawShip(
     ctx.fillStyle = 'orange'
     ctx.fill()
   }
-
   ctx.restore()
 }
 
