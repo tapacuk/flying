@@ -1,5 +1,7 @@
+import { Bullet } from './bullet'
 import { Entity } from './entity'
 import { Vector2 } from './vector'
+import type { World } from './world'
 
 interface InputState {
   isDown(code: string): boolean
@@ -32,5 +34,13 @@ export class Ship extends Entity {
     this.vel = this.vel.scale(DRAG)
 
     super.update(dt)
+  }
+
+  fire(world: World) {
+    const bulletSpeed = 600
+    const nose = this.pos.add(Vector2.fromAngle(this.angle, this.radius))
+    const bulletVel = this.vel.add(Vector2.fromAngle(this.angle, bulletSpeed))
+
+    world.spawn(new Bullet(nose, bulletVel))
   }
 }
