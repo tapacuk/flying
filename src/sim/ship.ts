@@ -8,11 +8,32 @@ interface InputState {
 }
 
 export class Ship extends Entity {
+  #hp: number = 100
   public thrust: boolean = false
 
   constructor(x: number, y: number) {
     super(new Vector2(x, y), 'ship', 15)
   }
+
+  get hp(): number {
+    return this.#hp
+  }
+
+  takeDamage(amount: number) {
+    this.#hp -= amount
+    if (this.#hp <= 0) {
+      this.alive = false
+    }
+  }
+
+  reset(x: number, y: number) {
+    this.pos = new Vector2(x, y)
+    this.vel = new Vector2(0, 0)
+    this.angle = 0
+    this.#hp = 100
+    this.alive = true
+  }
+
   updateWithInput(dt: number, input: InputState): void {
     const TURN_SPEED = 4
     const THRUST_POWER = 400
@@ -37,6 +58,8 @@ export class Ship extends Entity {
   }
 
   fire(world: World) {
+    if (!this.alive) return
+
     const bulletSpeed = 300
     const nose = this.pos.add(Vector2.fromAngle(this.angle, this.radius))
     const bulletVel = this.vel.add(Vector2.fromAngle(this.angle, bulletSpeed))
