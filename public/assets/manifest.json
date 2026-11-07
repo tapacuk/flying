@@ -1,0 +1,10 @@
+{
+  "sprites": {
+    "ship": "/assets/ship.png",
+    "bullet": "/assets/bullet.png"
+  },
+  "sounds": {
+    "fire": "/assets/fire.mp3",
+    "explosion": "/assets/explosion.mp3"
+  }
+}
