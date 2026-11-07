@@ -1,4 +1,5 @@
 import type { LoopMetrics } from '../core/loop'
+import type { World } from '../sim/world'
 
 export function lerp(a: number, b: number, alpha: number) {
   return a + (b - a) * alpha
@@ -70,4 +71,51 @@ export function drawGrid(
     ctx.lineTo(width, y)
   }
   ctx.stroke()
+}
+
+export function drawWorld(
+  ctx: CanvasRenderingContext2D,
+  world: World,
+  previousStates: Map<number, any>,
+  alpha: number,
+) {
+  for (const e of world) {
+    const prev = previousStates.get(e.id) || e
+
+    if (e.kind === 'ship') {
+      drawShip(ctx, prev, e, alpha)
+    } else if (e.kind === 'asteroid') {
+      const x = lerp(prev.pos.x, e.pos.x, alpha)
+      const y = lerp(prev.pos.y, e.pos.y, alpha)
+      ctx.beginPath()
+      ctx.arc(x, y, e.radius, 0, Math.PI * 2)
+      ctx.strokeStyle = 'gray'
+      ctx.stroke()
+    } else if (e.kind === 'bullet') {
+      const x = lerp(prev.pos.x, e.pos.x, alpha)
+      const y = lerp(prev.pos.y, e.pos.y, alpha)
+      ctx.fillStyle = 'yellow'
+      ctx.fillRect(x - 2, y - 2, 4, 4)
+    } else if (e.kind === 'homing-bullet') {
+      const x = lerp(prev.pos.x, e.pos.x, alpha)
+      const y = lerp(prev.pos.y, e.pos.y, alpha)
+      ctx.fillStyle = 'magenta'
+      ctx.fillRect(x - 3, y - 3, 6, 6)
+    } else if (e.kind === 'particle') {
+      const x = lerp(prev.pos.x, e.pos.x, alpha)
+      const y = lerp(prev.pos.y, e.pos.y, alpha)
+      ctx.fillStyle = 'orange'
+      ctx.fillRect(x - 1, y - 1, 2, 2)
+    } else if (e.kind === 'pickup') {
+      const x = lerp(prev.pos.x, e.pos.x, alpha)
+      const y = lerp(prev.pos.y, e.pos.y, alpha)
+      ctx.fillStyle = 'cyan'
+      ctx.beginPath()
+      ctx.moveTo(x, y - 8)
+      ctx.lineTo(x + 8, y)
+      ctx.lineTo(x, y + 8)
+      ctx.lineTo(x - 8, y)
+      ctx.fill()
+    }
+  }
 }
