@@ -37,7 +37,7 @@ export class Ship extends Entity {
   }
 
   fire(world: World) {
-    const bulletSpeed = 600
+    const bulletSpeed = 300
     const nose = this.pos.add(Vector2.fromAngle(this.angle, this.radius))
     const bulletVel = this.vel.add(Vector2.fromAngle(this.angle, bulletSpeed))
 

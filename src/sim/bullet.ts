@@ -2,7 +2,7 @@ import { Entity } from './entity'
 import { Vector2 } from './vector'
 
 export class Bullet extends Entity {
-  public ttl: number = 2
+  public ttl: number = 1
 
   constructor(pos: Vector2, vel: Vector2) {
     super(pos, 'bullet', 2)
